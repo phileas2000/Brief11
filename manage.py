@@ -2,16 +2,10 @@
 
 
 import os
-import pickle
 
-import urllib.request
 from flask import Flask, flash, request, redirect, url_for, render_template
-import urllib.parse
 from werkzeug.utils import secure_filename
-import cv2
 from PIL import Image
-import requests
-from io import BytesIO
 from urllib.request import urlopen
 from PIL import Image
 import numpy as np

@@ -1,0 +1,6 @@
+{
+  "name": "Brief 11 app",
+  "description": "Classifie images médicales.",
+  "repository": "https://git.heroku.com/whispering-dawn-79369.git",
+  "keywords": ["python", "flask" ]
+}
