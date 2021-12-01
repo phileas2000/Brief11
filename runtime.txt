@@ -1,1 +1,1 @@
-python-3.10.0amd64
+python-3.10.0-amd64
