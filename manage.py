@@ -98,7 +98,7 @@ def upload_image():
 	if file and allowed_file(file.filename):
 		filename = secure_filename(file.filename)
 		pred= "Pas de prédiction"
-		pred =prediction(file)
+		#pred =prediction(file)
 		flash("Catégorie:" + str(pred))
 		file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
