@@ -4,6 +4,6 @@ django-heroku
 flask 
 werkzeug
 Pillow
-urllib
+
 numpy
 torch
