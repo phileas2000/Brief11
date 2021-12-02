@@ -14,6 +14,9 @@ import torch
 import torch.nn.functional as F
 
 import torchvision as tv
+import shutil
+
+
 
 
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
@@ -59,7 +62,8 @@ class MedNet(nn.Module):
 
 app = Flask(__name__)
 app.config['SECRET_KEY']  = "secret key"
-app.config['UPLOAD_FOLDER']  = "static/uploadsImage"
+UPLOAD_FOLDER = os.path.join('static', 'uploadsImage')
+app.config['UPLOAD_FOLDER']  = UPLOAD_FOLDER
 class_names =['AbdomenCT', 'BreastMRI', 'ChestCT', 'CXR', 'Hand', 'HeadCT']
 
 def allowed_file(filename):
@@ -99,9 +103,15 @@ def upload_image():
 		filename = secure_filename(file.filename)
 		pred= "Pas de prédiction"
 		#pred =prediction(file)
-		flash("Catégorie:" + str(pred))
-		file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+		
+		#flash(os.listdir(app.config['UPLOAD_FOLDER']))
 
+
+	for root, dirs, files in os.walk(app.config['UPLOAD_FOLDER']):
+		for f in files:
+			os.unlink(os.path.join(root, f))
+		for d in dirs:
+			shutil.rmtree(os.path.join(root, d))
 	
 
 		return render_template('uploadImage.html', filename=filename)
@@ -109,11 +119,11 @@ def upload_image():
 		flash('Allowed image types are -> png, jpg, jpeg, gif')
 		return redirect(request.url)
 
-@app.route('/static/uploadsImage/<filename>')
-def display_image(filename):
-	#print('display_image filename: ' + filename)
-	#full_filename = os.path.join(app.config['UPLOAD_FOLDER'],'mapAsiawhite.jpg')
-	return redirect(url_for('static', filename='/uploadsImage/' + filename), code=301)
+#@app.route('/static/uploadsImage/<filename>')
+#def display_image(filename):
+#	#print('display_image filename: ' + filename)
+#	#full_filename = os.path.join(app.config['UPLOAD_FOLDER'],'mapAsiawhite.jpg')
+#	return redirect(url_for('static', filename='/uploadsImage/' + filename), code=301)
 
 if __name__ == "__main__":
     app.run()
