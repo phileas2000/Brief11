@@ -126,4 +126,4 @@ def upload_image():
 #	return redirect(url_for('static', filename='/uploadsImage/' + filename), code=301)
 
 if __name__ == "__main__":
-    app.run()
+    app.run(host='0.0.0.0',port=8000)
