@@ -7,7 +7,7 @@ from flask import Flask, flash, request, redirect, url_for, render_template
 from werkzeug.utils import secure_filename
 from PIL import Image
 
-from PIL import Image
+
 import numpy as np
 import torch.nn as nn
 import torch
@@ -17,6 +17,11 @@ import torchvision as tv
 import shutil
 
 
+app = Flask(__name__)
+app.config['SECRET_KEY']  = "secret key"
+UPLOAD_FOLDER = os.path.join('static', 'uploadsImage')
+app.config['UPLOAD_FOLDER']  = UPLOAD_FOLDER
+class_names =['AbdomenCT', 'BreastMRI', 'ChestCT', 'CXR', 'Hand', 'HeadCT']
 
 
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
@@ -60,11 +65,12 @@ class MedNet(nn.Module):
         return num_features
 
 
-app = Flask(__name__)
-app.config['SECRET_KEY']  = "secret key"
-UPLOAD_FOLDER = os.path.join('static', 'uploadsImage')
-app.config['UPLOAD_FOLDER']  = UPLOAD_FOLDER
-class_names =['AbdomenCT', 'BreastMRI', 'ChestCT', 'CXR', 'Hand', 'HeadCT']
+
+
+
+def create_app(config):
+    app = Flask(__name__)
+    app.config.from_object(config)
 
 def allowed_file(filename):
 	return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -81,7 +87,9 @@ def prediction(image):
 		return z
 	img = scaleImage(Image.open(image))
 	img =torch.unsqueeze(img, 0)
-	model = torch.load( "saved_model")
+	model = MedNet(64,64,6)
+	model.load_state_dict(torch.load('saved_model'))
+	print(model.eval())
 	with torch.no_grad():
 		num_class=int(np.argmax(model(img)))
 		return class_names[num_class]
@@ -101,9 +109,10 @@ def upload_image():
 		return redirect(request.url)
 	if file and allowed_file(file.filename):
 		filename = secure_filename(file.filename)
-		pred= "Pas de prédiction"
-		#pred =prediction(file)
-		
+		#pred= "Pas de prédiction"
+		pred =prediction(file)
+		print(pred)
+		flash(pred)
 		#flash(os.listdir(app.config['UPLOAD_FOLDER']))
 
 
@@ -125,5 +134,6 @@ def upload_image():
 #	#full_filename = os.path.join(app.config['UPLOAD_FOLDER'],'mapAsiawhite.jpg')
 #	return redirect(url_for('static', filename='/uploadsImage/' + filename), code=301)
 
-if __name__ == "__main__":
-    app.run(host='0.0.0.0',port=8000)
+'''if __name__ == "__main__":
+    app.run(host='0.0.0.0',port=5000)
+'''
